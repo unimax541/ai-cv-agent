@@ -1,20 +1,19 @@
-from fastapi import FastAPI, Request
-import requests
-from openai import OpenAI
+from fastapi import FastAPI
+from pydantic import BaseModel
 
 app = FastAPI()
 
-# IMPORTANT: on met une clé temporaire pour éviter erreur
-client = OpenAI(api_key="sk-REPLACE_ME")
+# ✅ définir le format attendu
+class WebhookData(BaseModel):
+    candidateId: str
+    jobId: str
 
 @app.get("/")
 def home():
     return {"status": "running"}
 
 @app.post("/webhook")
-async def webhook(request: Request):
-    data = await request.json()
-
-    print("✅ Nouveau candidat reçu :", data)
+async def webhook(data: WebhookData):
+    print("✅ Candidat reçu :", data)
 
     return {"status": "processed"}
