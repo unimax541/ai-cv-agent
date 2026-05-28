@@ -3,7 +3,9 @@ import requests
 from openai import OpenAI
 
 app = FastAPI()
-client = OpenAI(api_key="TON_API_OPENAI")
+
+# IMPORTANT: on met une clé temporaire pour éviter erreur
+client = OpenAI(api_key="sk-REPLACE_ME")
 
 @app.get("/")
 def home():
@@ -13,8 +15,6 @@ def home():
 async def webhook(request: Request):
     data = await request.json()
 
-    # Simulation simple pour l’instant
-    print("New candidate received:", data)
+    print("✅ Nouveau candidat reçu :", data)
 
     return {"status": "processed"}
-``
