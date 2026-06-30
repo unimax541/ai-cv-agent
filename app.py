@@ -32,4 +32,3 @@ def webhook(req: Request):
     return {
         "result": response.choices[0].message.content
     }
-``
