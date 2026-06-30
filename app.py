@@ -1,19 +1,35 @@
-from fastapi import FastAPI
 from pydantic import BaseModel
+from openai import OpenAI
+import os
 
-app = FastAPI()
+client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
-# ✅ définir le format attendu
-class WebhookData(BaseModel):
+class Request(BaseModel):
     candidateId: str
     jobId: str
 
-@app.get("/")
-def home():
-    return {"status": "running"}
-
 @app.post("/webhook")
-async def webhook(data: WebhookData):
-    print("✅ Candidat reçu :", data)
+def webhook(req: Request):
 
-    return {"status": "processed"}
+    prompt = f"""
+    Analyse ce candidat : {req.candidateId}
+    pour ce poste : {req.jobId}
+
+    Donne :
+    - Score /100
+    - 3 forces
+    - 3 faiblesses
+    - Verdict
+    """
+
+    response = client.chat.completions.create(
+        model="gpt-5-chat",
+        messages=[
+            {"role": "user", "content": prompt}
+        ]
+    )
+
+    return {
+        "result": response.choices[0].message.content
+    }
+``
