@@ -5,11 +5,7 @@ import os
 
 app = FastAPI()
 
-# Vérifier si la clé existe
 api_key = os.environ.get("OPENAI_API_KEY")
-
-if not api_key:
-    print("❌ ERREUR: OPENAI_API_KEY manquante")
 
 client = OpenAI(api_key=api_key)
 
@@ -21,22 +17,25 @@ class Request(BaseModel):
 def webhook(req: Request):
     try:
         prompt = f"""
-        Tu es un expert en recrutement.
+Tu es un expert en recrutement.
 
-        Analyse ce candidat : {req.candidateId}
-        pour ce poste : {req.jobId}
+Analyse ce candidat : {req.candidateId}
+pour ce poste : {req.jobId}
 
-        Donne :
-        - Score sur 100
-        - 3 forces
-        - 3 faiblesses
-        - Verdict final
-        """
+Donne :
+- Score sur 100
+- 3 forces
+- 3 faiblesses
+- Verdict final
+"""
 
         response = client.chat.completions.create(
-            model="gpt-5-chat",
+            model="gpt-4o-mini",
             messages=[
-                {"role": "user", "content": prompt}
+                {
+                    "role": "user",
+                    "content": prompt
+                }
             ]
         )
 
@@ -51,4 +50,6 @@ def webhook(req: Request):
 
 @app.get("/")
 def root():
-    return {"message": "Agent IA running 🚀"}
+    return {
+        "message": "Agent IA running"
+    }
